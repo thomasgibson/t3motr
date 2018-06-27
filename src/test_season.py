@@ -3,12 +3,12 @@ import mogreps
 import uncertainty as un
 from netCDF4 import Dataset
 from pathlib import Path
+import os
 
-days = [19, 20, 21]
-days = np.arange(2, 25, 1)
+days = np.arange(2, 31, 1)
 times = [9]
-year = 2013
-month = 4
+years = [2013, 2014, 2015, 2016]
+month = 1
 uncertainties = {}
 
 # for now let's do lead time of 27 hours for now
@@ -35,6 +35,8 @@ for day in days:
         except FileNotFoundError:
             pass
 
+        os.remove(str(forecast_name))
+os.remove(str(reference_name))
 
-print(uncertainties)
+print("July", np.mean(list(uncertainties.values())))
         
