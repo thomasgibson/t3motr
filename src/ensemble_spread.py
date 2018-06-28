@@ -7,8 +7,8 @@ from pathlib import Path
 import os
 
 days = np.arange(2, 31, 1)
-times = [9]
-years = [2013, 2014, 2015, 2016]
+times = [15]
+years = [2014, 2015, 2016]
 months = np.arange(1, 12, 1)
 ensembles = np.arange(1, 12, 1)
 uncertainties = {}
@@ -34,7 +34,7 @@ r_array = output_data.variables['rainfall_error']
 
 
 # for now let's do lead time of 27 hours for now
-lead_time = 3  # so for a time of 9 and lead time of 9, we are looking at 12pm
+lead_time = 27  # so for a time of 9 and lead time of 9, we are looking at 12pm
 month_map = {1: "January",
              2: "Feburary",
              3: "March",
@@ -95,7 +95,7 @@ for year in years:
 
                             os.remove(str(forecast_name))
 
-                        except FileNotFoundError:
+                        except (OSError, FileNotFoundError):
                             p_array[idx, ensemble-1] = np.nan
                             T_array[idx, ensemble-1] = np.nan
                             r_array[idx, ensemble-1] = np.nan
@@ -103,7 +103,7 @@ for year in years:
 
                     os.remove(str(reference_name))
 
-                except FileNotFoundError:
+                except (OSError, FileNotFoundError):
                     pass
 
 print("date", date_array[:])
