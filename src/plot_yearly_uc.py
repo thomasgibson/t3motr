@@ -2,6 +2,8 @@ import numpy as np
 import netCDF4 as nc
 import sys
 
+from collections import defaultdict
+
 try:
     data_set = nc.Dataset('uncertainty_output.nc')
 except FileNotFoundError:
@@ -42,13 +44,19 @@ def flatten_data(data_set):
     rain_err = np.asarray(data_set['rainfall_error'][:]).tolist()
 
     data = AutoVivification()
+    start_idx = AutoVivification()
 
     for i, date in enumerate(dates):
         year, month, day = convert_date(date)
+
+        if not bool(start_idx[year][month]) and start_idx[year][month] != 0:
+            start_idx[year][month] = i
+
         data[year][month][day]["pressure_error"] = pr_err[i]
         data[year][month][day]["temperature_error"] = t_err[i]
         data[year][month][day]["rainfall_error"] = rain_err[i]
 
-    return data
+    return data, start_idx
 
-data = flatten_data(data_set)
+data, start_idx = flatten_data(data_set)
+        
