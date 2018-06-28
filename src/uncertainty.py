@@ -17,7 +17,7 @@ class UncertaintyBase(object):
     def _setup(self):
         raise NotImplementedError("Method not implemented.")
 
-    
+
 class NormalizedErrors(UncertaintyBase):
     """
     An uncertainty manager which computes normalized errors
