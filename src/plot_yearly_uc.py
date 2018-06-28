@@ -1,6 +1,8 @@
 import numpy as np
 import netCDF4 as nc
 import sys
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from collections import defaultdict
 
@@ -18,6 +20,11 @@ class AutoVivification(dict):
         except KeyError:
             value = self[item] = type(self)()
             return value
+
+
+FONTSIZE = 12
+MARKERSIZE = 10
+LINEWIDTH = 3
 
 
 def convert_date(date):
@@ -76,4 +83,51 @@ for year in data:
             yearly_t_err[year].append(data[year][month][day]["temperature_error"])
             yearly_rain_err[year].append(data[year][month][day]["rainfall_error"])
 
-import ipdb; ipdb.set_trace()
+month_mapper = {1: "Jan.",
+                2: "Feb.",
+                3: "Mar.",
+                4: "Apr.",
+                5: "May",
+                6: "Jun.",
+                7: "Jul.",
+                8: "Aug.",
+                9: "Sep.",
+                10: "Oct.",
+                11: "Nov.",
+                12: "Dec."}
+
+fig, axes = plt.subplots(4, 1, figsize=(12, 3), squeeze=False)
+axes = axes.flatten()
+ax1, ax2, ax3, ax4 = axes
+
+for ax in axes:
+    ax.set_ylabel("Normalized Error", fontsize=FONTSIZE)
+
+ax_mapper = {2013: ax1,
+             2014: ax2,
+             2015: ax3,
+             2016: ax4}
+
+for year in yearly_pr_err:
+
+    ax = ax_mapper[year]
+    pr = yearly_pr_err[year]
+    t = yearly_t_err[year]
+    rain = yearly_rain_err[year]
+
+    idx = yearly_month_idx[year]
+    idx_vals = list(idx.values())
+
+    ax.plot(list(range(len(pr))), pr, label="Pressure UC")
+    # ax.plot(list(range(len(t))), t, label="Temp. UC")
+    # ax.plot(list(range(len(rain))), rain, label="Rainfall UC")
+
+    ax.set_xticks(idx_vals)
+    ax.set_xticklabels(list(month_mapper.values()))
+
+sns.despine(fig)
+fig.savefig("yearly_uc.pdf",
+            orientation="landscape",
+            format="pdf",
+            transparent=True,
+            bbox_inches="tight")
