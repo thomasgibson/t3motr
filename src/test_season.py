@@ -67,10 +67,11 @@ for year in years:
                     p_array[idx] = measurerer.p_err
                     T_array[idx] = measurerer.T_err
                     r_array[idx] = measurerer.r_err
+
+                    # Remove file once computation is finished
+                    os.remove(str(forecast_name))
                 except FileNotFoundError:
                     pass
-
-            os.remove(str(forecast_name))
 
     try:
         os.remove("prods*")
