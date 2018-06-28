@@ -43,19 +43,11 @@ def flatten_data(data_set):
 
     data = AutoVivification()
 
-    # initialize (this is really shitty code, but so is this project)
-    for date in dates:
-        year, month, day = convert_date(date)
-        data[year][month][day]["pressure_error"] = list()
-        data[year][month][day]["temperature_error"] = list()
-        data[year][month][day]["rainfall_error"] = list()
-
-
     for i, date in enumerate(dates):
         year, month, day = convert_date(date)
-        data[year][month][day]["pressure_error"].append(pr_err[i])
-        data[year][month][day]["temperature_error"].append(t_err[i])
-        data[year][month][day]["rainfall_error"].append(rain_err[i])
+        data[year][month][day]["pressure_error"] = pr_err[i]
+        data[year][month][day]["temperature_error"] = t_err[i]
+        data[year][month][day]["rainfall_error"] = rain_err[i]
 
     return data
 
