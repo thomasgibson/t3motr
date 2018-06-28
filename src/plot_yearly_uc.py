@@ -36,7 +36,7 @@ def convert_date(date):
     return year, month, day
 
 
-def flatten_data(data_set):
+def organize_data(data_set):
 
     dates = data_set['date']
     pr_err = np.asarray(data_set['pressure_error'][:]).tolist()
@@ -58,5 +58,22 @@ def flatten_data(data_set):
 
     return data, start_idx
 
-data, start_idx = flatten_data(data_set)
+data, start_idx = organize_data(data_set)
         
+yearly_pr_err = defaultdict(list)
+yearly_t_err = defaultdict(list)
+yearly_rain_err = defaultdict(list)
+yearly_month_idx = AutoVivification()
+
+for year in data:
+    for month in data[year]:
+        # Always start at 0 for Jan.
+        yearly_month_idx[year][month] = start_idx[year][month] - start_idx[year][1]
+
+        for day in data[year][month]:
+
+            yearly_pr_err[year].append(data[year][month][day]["pressure_error"])
+            yearly_t_err[year].append(data[year][month][day]["temperature_error"])
+            yearly_rain_err[year].append(data[year][month][day]["rainfall_error"])
+
+import ipdb; ipdb.set_trace()
