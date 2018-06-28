@@ -29,9 +29,19 @@ class NormalizedErrors(UncertaintyBase):
     """
 
     def _setup(self):
-        self.p_err = self.compute_pressure_errors()
-        self.T_err = self.compute_temperature_errors()
-        self.r_err = self.compute_rainfall_errors()
+        try:
+            self.p_err = self.compute_pressure_errors()
+        except ValueError:
+            self.p_err = np.nan
+        try:
+            self.T_err = self.compute_temperature_errors()
+        except ValueError:
+            self.T_err = np.nan
+
+        try:
+            self.r_err = self.compute_rainfall_errors()
+        except ValueError:
+            self.r_err = np.nan
 
     def compute_pressure_errors(self):
         ref_pr = self._reference.variables['air_pressure_at_sea_level'][:]
