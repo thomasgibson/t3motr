@@ -6,7 +6,7 @@ from netCDF4 import Dataset
 from pathlib import Path
 import os
 
-days = np.arange(2, 31, 1)
+days = np.arange(2, 10, 1)
 times = [9]
 years = [2013, 2014, 2015, 2016]
 months = [1]
@@ -21,6 +21,8 @@ if os.path.isfile('./'+str(output_name)) is not True:
     output_data.createVariable('temperature_error', float, ('id',))
     output_data.createVariable('rainfall_error', float, ('id',))
     output_data.close()
+else:
+    print('WARNING: adding to existing netcdf file.')
 
 output_data = Dataset(output_name, 'a')
 date_array = output_data.variables['date']
@@ -84,6 +86,15 @@ for month in months:
             except FileNotFoundError:
                 pass
 
-            os.remove(str(forecast_name))
-        os.remove(str(reference_name))
-os.remove("*.nc")
+
+        os.remove(str(forecast_name))
+try:
+    os.remove("prods*")
+except FileNotFoundError:
+    print("No files found to delete.")
+    pass
+
+print("date", date_array[:])
+print("pressure", p_array[:])
+print("temperature", T_array[:])
+print("rainfall", r_array[:])
