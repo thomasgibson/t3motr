@@ -6,12 +6,12 @@ from netCDF4 import Dataset
 from pathlib import Path
 import os
 
-days = np.arange(2, 31, 1)
+days = np.arange(1, 31, 1)
 times = [15]
-years = [2014, 2015, 2016]
+years = [2013, 2014, 2015, 2016]
 months = np.arange(1, 12, 1)
 ensembles = np.arange(1, 12, 1)
-uncertainties = {}
+
 output_name = 'ensemble_output.nc'
 
 if os.path.isfile('./'+str(output_name)) is not True:
@@ -35,20 +35,6 @@ r_array = output_data.variables['rainfall_error']
 
 # for now let's do lead time of 27 hours for now
 lead_time = 27  # so for a time of 9 and lead time of 9, we are looking at 12pm
-month_map = {1: "January",
-             2: "Feburary",
-             3: "March",
-             4: "April",
-             5: "May",
-             6: "June",
-             7: "July",
-             8: "August",
-             9: "September",
-             10: "October",
-             11: "November",
-             12: "December"}
-season_data = {}
-year = years[0]
 
 for year in years:
     for month in months:
