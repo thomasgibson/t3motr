@@ -1,5 +1,6 @@
 import numpy as np
-import mogreps
+from mogreps import download_data as download_data
+from mogreps import make_data_object_name as make_data
 import uncertainty as un
 from netCDF4 import Dataset
 from pathlib import Path
@@ -10,6 +11,23 @@ times = [9]
 years = [2013, 2014, 2015, 2016]
 months = [1]
 uncertainties = {}
+output_name = 'uncertainty_output.nc'
+
+if os.path.isfile('./'+str(output_name)) is not True:
+    output_data = Dataset(output_name, 'w')
+    output_data.createDimension('id', None)
+    output_data.createVariable('date', str, ('id',))
+    output_data.createVariable('pressure_error', float, ('id',))
+    output_data.createVariable('temperature_error', float, ('id',))
+    output_data.createVariable('rainfall_error', float, ('id',))
+    output_data.close()
+
+output_data = Dataset(output_name, 'a')
+date_array = output_data.variables['date']
+p_array = output_data.variables['pressure_error']
+T_array = output_data.variables['temperature_error']
+r_array = output_data.variables['rainfall_error']
+
 
 # for now let's do lead time of 27 hours for now
 lead_time = 3  # so for a time of 9 and lead time of 9, we are looking at 12pm
@@ -26,32 +44,46 @@ month_map = {1: "January",
              11: "November",
              12: "December"}
 season_data = {}
+year = years[0]
 
 for month in months:
     for day in days:
         for time in times:
-            forecast_name = mogreps.download_data('mogreps-uk',
-                                                  mogreps.make_data_object_name('mogreps-uk', year,
-                                                                                month, day - 1,
-                                                                                time, 0, lead_time),
-                                                  data_folder=Path('.'))
-            reference_name = mogreps.download_data('mogreps-uk',
-                                                   mogreps.make_data_object_name('mogreps-uk', year,
-                                                                                 month, day,
-                                                                                 time, 0, lead_time),
-                                                   data_folder=Path('.'))
+
+            forecast_name = download_data('mogreps-uk',
+                                          make_data('mogreps-uk',
+                                                    year,
+                                                    month,
+                                                    day - 1,
+                                                    time,
+                                                    0,
+                                                    lead_time),
+                                          data_folder=Path('.'))
+
+            reference_name = download_data('mogreps-uk',
+                                           make_data('mogreps-uk',
+                                                     year,
+                                                     month,
+                                                     day,
+                                                     time,
+                                                     0,
+                                                     lead_time),
+                                           data_folder=Path('.'))
 
             try:
                 forecast_data = Dataset(forecast_name, 'a')
                 reference_data = Dataset(reference_name, 'a')
-                measurerer = un.NormalizedErrorAirPressure(reference_data, forecast_data)
-                uncertainties[(day, time)] = measurerer.norm_err
+                measurerer = un.NormalizedErrors(reference_data, forecast_data)
+                idx = output_data.dimensions['id'].size
+
+                date_array[idx] = str(year)+'_'+str(month)+'_'+str(day)
+
+                p_array[idx] = measurerer.p_err
+                T_array[idx] = measurerer.T_err
+                r_array[idx] = measurerer.r_err
             except FileNotFoundError:
                 pass
 
             os.remove(str(forecast_name))
         os.remove(str(reference_name))
-    season_data[month_map[month]] = uncertainties
-
-print("July", np.mean(list(uncertainties.values())))
-        
+os.remove("*.nc")
