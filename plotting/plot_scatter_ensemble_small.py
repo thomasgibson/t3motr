@@ -97,7 +97,7 @@ for variable, title in zip(variables, labels):
         ax.set_xlim([dates_matrix[0][0] - 1, dates_matrix[-1][-1] + 1])
 
         ax.grid(b=True, which='major', linestyle='-.')
-        fig.savefig('ensemble_scatter_'+str(variable)+'_'+str(j)+'_small.pdf',
+        fig.savefig('ensemble_scatter_'+str(variable)+'_'+str(j)+'_small.png',
                     orientation="landscape",
                     transparent=True,
                     bbox_inches='tight')

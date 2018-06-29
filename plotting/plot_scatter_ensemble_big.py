@@ -80,7 +80,7 @@ for variable, title in zip(variables, labels):
     ax.set_ylim([np.min(full_error) - data_range, np.max(full_error) + data_range]) 
 
     ax.grid(b=True, which='major', linestyle='-.')
-    fig.savefig('ensemble_scatter_'+str(variable)+'.pdf',
+    fig.savefig('ensemble_scatter_'+str(variable)+'big.png',
                 orientation="landscape",
                 transparent=True,
                 bbox_inches='tight')
