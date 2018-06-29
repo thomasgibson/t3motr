@@ -2,3 +2,5 @@
 # Team T^3
 
 A quick exploration of forecast evolution using MOGREPS-UK data. We've developed a normalised error metric for ``forecast uncertainty'', and taken a more heuristic, visualisation-based, look at 2015/16 winter storms Desmond and Gertrude.
+
+> The most illuminating notebook to look at to get the gist of what we've done is `ShinyForPresentation.ipynb`
