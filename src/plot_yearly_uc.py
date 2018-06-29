@@ -83,6 +83,7 @@ for year in data:
             yearly_t_err[year].append(data[year][month][day]["temperature_error"])
             yearly_rain_err[year].append(data[year][month][day]["rainfall_error"])
 
+
 month_mapper = {1: "Jan.",
                 2: "Feb.",
                 3: "Mar.",
@@ -96,38 +97,66 @@ month_mapper = {1: "Jan.",
                 11: "Nov.",
                 12: "Dec."}
 
-fig, axes = plt.subplots(4, 1, figsize=(12, 3), squeeze=False)
+
+fig, axes = plt.subplots(3, 1, figsize=(6, 5), squeeze=False, constrained_layout=True)
 axes = axes.flatten()
-ax1, ax2, ax3, ax4 = axes
+ax1, ax2, ax3 = axes
 
 for ax in axes:
-    ax.set_ylabel("Normalized Error", fontsize=FONTSIZE)
+    if ax == ax2:
+        ax.set_ylabel("Normalized Error", fontsize=FONTSIZE)
 
 ax_mapper = {2013: ax1,
              2014: ax2,
-             2015: ax3,
-             2016: ax4}
+             2015: ax3}
 
 for year in yearly_pr_err:
 
-    ax = ax_mapper[year]
-    pr = yearly_pr_err[year]
-    t = yearly_t_err[year]
-    rain = yearly_rain_err[year]
+    try:
+        ax = ax_mapper[year]
+        pr = yearly_pr_err[year]
+        t = yearly_t_err[year]
+        rain = yearly_rain_err[year]
 
-    idx = yearly_month_idx[year]
-    idx_vals = list(idx.values())
+        idx = yearly_month_idx[year]
+        idx_vals = list(idx.values())
 
-    ax.plot(list(range(len(pr))), pr, label="Pressure UC")
-    # ax.plot(list(range(len(t))), t, label="Temp. UC")
-    # ax.plot(list(range(len(rain))), rain, label="Rainfall UC")
+        ax.plot(list(range(len(pr))), pr, label="Pressure UC",
+                linestyle="solid",
+                clip_on=False)
+        ax.plot(list(range(len(t))), t, label="Temp. UC",
+                linestyle="dotted",
+                clip_on=False)
 
-    ax.set_xticks(idx_vals)
-    ax.set_xticklabels(list(month_mapper.values()))
+        ax.set_xticks(idx_vals)
+        ax.set_xticklabels(list(month_mapper.values()))
+
+    except KeyError:
+        pass
+
+ax1.set_title("2013", fontsize=FONTSIZE)
+ax2.set_title("2014", fontsize=FONTSIZE)
+ax3.set_title("2015", fontsize=FONTSIZE)
+
+for ax in axes:
+    ax.grid(b=True, which='major', linestyle='-.')
+
+fig.subplots_adjust(hspace=0.7)
+handles, labels = ax1.get_legend_handles_labels()
+legend = fig.legend(handles, labels,
+                    loc=9,
+                    bbox_to_anchor=(0.5, 1.01),
+                    bbox_transform=fig.transFigure,
+                    ncol=2,
+                    handlelength=2,
+                    fontsize=FONTSIZE,
+                    numpoints=1,
+                    frameon=True)
 
 sns.despine(fig)
 fig.savefig("yearly_uc.pdf",
             orientation="landscape",
             format="pdf",
             transparent=True,
-            bbox_inches="tight")
+            bbox_inches='tight',
+            bbox_extra_artists=[legend])
