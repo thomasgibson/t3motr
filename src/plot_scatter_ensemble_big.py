@@ -26,8 +26,8 @@ def convert_date(date):
 data = Dataset('ensemble_output.nc', 'r')
 
 variables = ['pressure_error', 'rainfall_error']
-labels1 = ['Normalised Pressure Error', 'Normalised Rainfall Error']
-labels2 = ['Mean pressure error', 'mean rainfall error']
+
+labels = ['Pressure', 'Rainfall']
 
 dates_raw = data.variables['date']
 dates = []
@@ -42,16 +42,15 @@ years = YearLocator()
 months = MonthLocator()
 yearsFmt = DateFormatter('%Y')
 
+FONTSIZE = 12
 
-for variable, label1, label2 in zip(variables, labels1, labels2):
+for variable, title in zip(variables, labels):
 
     error = data.variables[variable][:,:]
     full_dates = []
     full_error = []
-    mean_error = []
 
     for i in range(len(error)):
-        mean_error.append(np.mean(error[i]))
         for j in range(len(error[i])):
             if isnan(error[i,j]):
                 pass
@@ -61,42 +60,28 @@ for variable, label1, label2 in zip(variables, labels1, labels2):
             
 
     plt.close()
-    # declare font properties for figure
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
-    font = {'size':28}
-    plt.rc('font',**font)
 
     # make individual plot
     fig = plt.figure(1)
     ax = fig.add_subplot(111)
 
     ax.scatter(full_dates, full_error, color='black', marker='.', s=0.2)
-    ax.set_xlabel(r'Date', fontsize=24)
-    ax.set_ylabel(label1, fontsize=24)
+
+    # set labels
+    ax.set_xlabel(r'Date', fontsize=FONTSIZE)
+    ax.set_ylabel(r'Normalised Error', fontsize=FONTSIZE)
+    ax.set_title(title, fontsize=FONTSIZE)
+
+    # edit axis ticks
     ax.xaxis.set_major_locator(years)
     ax.xaxis.set_major_formatter(yearsFmt)
     ax.xaxis.set_minor_locator(months)
     data_range = 0.05 * (np.max(full_error) - np.min(full_error))
     ax.set_ylim([np.min(full_error) - data_range, np.max(full_error) + data_range]) 
-    
-    fig.savefig('ensemble_scatter_'+str(variable)+'.pdf', bbox_inches='tight')
 
-    plt.close()
-
-    # declare font properties for figure
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
-    font = {'size':28}
-    plt.rc('font',**font)
-
-    # make individual plot
-    fig = plt.figure(1)
-    ax = fig.add_subplot(111)
-
-    ax.plot(dates, mean_error, color='black', marker='', linestyle='-')
-    ax.set_xlabel(r'Date', fontsize=24)
-    ax.set_ylabel(label2, fontsize=24)
-
-    fig.savefig('ensemble_mean_error_'+str(variable)+'.pdf', bbox_inches='tight')
+    ax.grid(b=True, which='major', linestyle='-.')
+    fig.savefig('ensemble_scatter_'+str(variable)+'.pdf',
+                orientation="landscape",
+                transparent=True,
+                bbox_inches='tight')
     
