@@ -153,7 +153,6 @@ legend = fig.legend(handles, labels,
                     numpoints=1,
                     frameon=True)
 
-sns.despine(fig)
 fig.savefig("yearly_uc.pdf",
             orientation="landscape",
             format="pdf",
