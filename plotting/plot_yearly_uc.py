@@ -153,9 +153,9 @@ legend = fig.legend(handles, labels,
                     numpoints=1,
                     frameon=True)
 
-fig.savefig("yearly_uc.pdf",
+fig.savefig("yearly_uc.png",
             orientation="landscape",
-            format="pdf",
+            format="png",
             transparent=True,
             bbox_inches='tight',
             bbox_extra_artists=[legend])
